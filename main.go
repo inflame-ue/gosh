@@ -29,8 +29,13 @@ func repl() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		command.Execute()
+		
+		output, err := command.Execute()
+		if err != nil {
+			log.Fatal(err)
+		}
 
+		fmt.Printf("%s\n", output)
 		fmt.Println()
 	}
 }

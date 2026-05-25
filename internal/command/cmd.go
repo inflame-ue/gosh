@@ -1,28 +1,26 @@
 package command
 
 import (
+	"os"
 	"os/exec"
 )
 
 type Command struct {
 	Name  string
 	Args  []string
-	Flags map[string]string
 }
 
-func NewCommand(name string, args []string, flags map[string]string) *Command {
+func NewCommand(name string, args []string) *Command {
 	return &Command{
 		Name:  name,
 		Args:  args,
-		Flags: flags,
 	}
 }
 
-func (c *Command) Execute() ([]byte, error) {
-	out, err := exec.Command(c.Name).Output()
-	if err != nil {
-		return []byte{}, err
-	}
-
-	return out, nil
+func (c *Command) Execute() error {
+	cmd := exec.Command(c.Name, c.Args...)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
 }

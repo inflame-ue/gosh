@@ -16,7 +16,7 @@ func repl() {
 		scanner.Scan()
 
 		if err := scanner.Err(); err != nil {
-			log.Fatal(err)
+			log.Printf("err: %v", err)
 		}
 
 		input := scanner.Text()
@@ -27,15 +27,14 @@ func repl() {
 		
 		command, err := parser.ParseCommand(input)
 		if err != nil {
-			log.Fatal(err)
+			log.Printf("err: %v", err)
 		}
 		
-		output, err := command.Execute()
+		err = command.Execute()
 		if err != nil {
-			log.Fatal(err)
+			log.Printf("err: %v", err)
 		}
 
-		fmt.Printf("%s\n", output)
 		fmt.Println()
 	}
 }

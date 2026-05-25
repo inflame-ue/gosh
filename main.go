@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+
+	"github.com/inflame-ue/gosh/internal/parser"
 )
 
 func repl() {
@@ -17,9 +19,18 @@ func repl() {
 			log.Fatal(err)
 		}
 
-		command := scanner.Text()
+		input := scanner.Text()
+		if len(input) == 0 {
+			fmt.Println()
+			continue
+		}
+		
+		command, err := parser.ParseCommand(input)
+		if err != nil {
+			log.Fatal(err)
+		}
+		command.Execute()
 
-		fmt.Printf("%v\n", command)
 		fmt.Println()
 	}
 }

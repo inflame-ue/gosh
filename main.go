@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	"github.com/inflame-ue/gosh/internal/builtins"
+	"github.com/inflame-ue/gosh/internal/command"
 	"github.com/inflame-ue/gosh/internal/parser"
 )
 
@@ -43,8 +44,11 @@ func repl() {
 		}
 
 		if len(commands) > 1 {
-			fmt.Println("handle pipes here...")
-			return
+			err := command.ExecuteCommands(commands)
+			if err != nil {
+				fmt.Printf("err: %v\n", err)
+			}
+			continue
 		}
 
 		command := commands[0]

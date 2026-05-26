@@ -32,18 +32,15 @@ func ExecuteCommands(cmds []*Command) error {
 	}
 	commands[len(commands) - 1].Stdout = os.Stdout
 
-	for index := 0; index < len(commands) - 1; index++ {
-		err := commands[index + 1].Start()
+	for _, cmd := range commands {
+		err := cmd.Start()
 		if err != nil {
 			return err
 		}
-		
-		err = commands[index].Run()
-		if err != nil {
-			return err
-		}
-		
-		err = commands[index + 1].Wait()
+	}
+
+	for _, cmd := range commands {
+		err := cmd.Wait()
 		if err != nil {
 			return err
 		}

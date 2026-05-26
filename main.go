@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/inflame-ue/gosh/internal/builtins"
 	"github.com/inflame-ue/gosh/internal/parser"
 )
 
@@ -17,7 +18,7 @@ func repl() {
 		signal.Notify(sigc, syscall.SIGINT, syscall.SIGTERM)
 		go func() {
 			<-sigc
-			fmt.Println("\ninterrupt received...continuing...")
+			fmt.Println("\ninterrupt received...exiting...")
 			os.Exit(1)
 		}()
 
@@ -41,13 +42,17 @@ func repl() {
 			continue
 		}
 
+		if handler, ok := builtins.BuiltinCommands[command.Name]; ok {
+			handler(*command)
+			continue
+		}
+
 		err = command.Execute()
 		if err != nil {
 			fmt.Printf("err: %v\n", err)
 			continue
 		}
 
-		fmt.Println()
 	}
 }
 

@@ -6,12 +6,16 @@ import (
 	"github.com/inflame-ue/gosh/internal/command"
 )
 
-func ParseCommand(input string) (*command.Command, error) {
-	commandParts := strings.Fields(input)
-	commandName, commandArgs := commandParts[0], commandParts[1:]
+func ParseCommands(input string) ([]*command.Command, error) {
+	var commands []*command.Command 
+	
+	commandStrings := strings.SplitSeq(input, "|")
+	for commandString := range commandStrings {
+		commandParts := strings.Fields(commandString)
+		commandName, commandArgs := commandParts[0], commandParts[1:]
 
-	// TODO: for now we only care about the commandName, args and flags come later
-	command := command.NewCommand(commandName, commandArgs) 
-
-	return command, nil
+		commands = append(commands, command.NewCommand(commandName, commandArgs))
+	}
+	
+	return commands, nil
 }

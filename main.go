@@ -36,12 +36,18 @@ func repl() {
 			continue
 		}
 
-		command, err := parser.ParseCommand(input)
+		commands, err := parser.ParseCommands(input)
 		if err != nil {
 			fmt.Printf("err: %v\n", err)
 			continue
 		}
 
+		if len(commands) > 1 {
+			fmt.Println("handle pipes here...")
+			return
+		}
+
+		command := commands[0]
 		if handler, ok := builtins.BuiltinCommands[command.Name]; ok {
 			handler(*command)
 			continue
@@ -52,7 +58,6 @@ func repl() {
 			fmt.Printf("err: %v\n", err)
 			continue
 		}
-
 	}
 }
 

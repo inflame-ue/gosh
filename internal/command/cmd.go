@@ -95,7 +95,12 @@ func ExecuteCommands(cmds []*Command) error {
 	}
 
 	if cmds[0].Redirect != nil && cmds[0].Redirect.State == InputFromFile {
-		commands[0].Stdin = out
+		file, err := prepareFile(cmds[0].Redirect)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+		commands[0].Stdin = file
 	}
 	commands[len(commands)-1].Stdout = out
 

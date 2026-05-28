@@ -93,6 +93,10 @@ func ExecuteCommands(cmds []*Command) error {
 	} else {
 		out = os.Stdout
 	}
+
+	if	cmds[0].Redirect.State == InputFromFile {
+		commands[0].Stdin = out
+	}
 	commands[len(commands)-1].Stdout = out
 
 	for _, cmd := range commands {
@@ -131,11 +135,11 @@ func (c *Command) Execute() error {
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 		}
+	} else {
+		cmd.Stdin = os.Stdin
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
 	}
-
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
 
 	return cmd.Run()
 }

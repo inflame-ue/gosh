@@ -1,6 +1,0 @@
-21
-go.mod
-internal
-LICENSE
-main.go
-out.txt

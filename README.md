@@ -38,7 +38,7 @@ go build -o gosh ./cmd/gosh
 | `cmd > file` | Redirect stdout to file, overwriting |
 | `cmd >> file` | Redirect stdout to file, appending |
 | `cmd < file` | Redirect file to stdin |
-| `cmd1 | cmd2 > file` | Pipe output and redirect final result to file |
+| `cmd1 \| cmd2 > file` | Pipe output and redirect final result to file |
 
 **Note**: An arbitrary number of commands can be piped together. 
 

@@ -5,9 +5,23 @@ import (
 	"os/exec"
 )
 
+type RedirectState string
+
+const (
+	OutputToFile  RedirectState = ">"
+	AppendToFile  RedirectState = ">>"
+	InputFromFile RedirectState = "<"
+)
+
+type CommandRedirect struct {
+	File  string
+	State RedirectState
+}
+
 type Command struct {
-	Name string
-	Args []string
+	Name     string
+	Args     []string
+	Redirect *CommandRedirect
 }
 
 func NewCommand(name string, args []string) *Command {
@@ -17,22 +31,29 @@ func NewCommand(name string, args []string) *Command {
 	}
 }
 
+func NewCommandWithRedirect(name string, args []string, redirect *CommandRedirect) *Command {
+	return &Command{
+		Name:     name,
+		Args:     args,
+		Redirect: redirect,
+	}
+}
+
 func ExecuteCommands(cmds []*Command) error {
 	var commands []*exec.Cmd
 	for _, c := range cmds {
 		commands = append(commands, exec.Command(c.Name, c.Args...))
 	}
 
-	for index := 0; index < len(commands) - 1; index++ {
+	for index := 0; index < len(commands)-1; index++ {
 		pipe, err := commands[index].StdoutPipe()
 		if err != nil {
 			return err
 		}
-		commands[index + 1].Stdin = pipe
+		commands[index+1].Stdin = pipe
 	}
-	commands[len(commands) - 1].Stdout = os.Stdout
+	commands[len(commands)-1].Stdout = os.Stdout
 
-	// TODO: ponder on whether there are any concurrency problems here?
 	for _, cmd := range commands {
 		err := cmd.Start()
 		if err != nil {

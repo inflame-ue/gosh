@@ -2,7 +2,7 @@ package builtins
 
 import (
 	"bufio"
-	"log"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -23,7 +23,7 @@ func writeToStd(out string, std *os.File) {
 	writer := bufio.NewWriter(std)
 	_, err := writer.WriteString(out + "\n")
 	if err != nil {
-		log.Fatal(err)
+		fmt.Printf("failed to write to std: %v", err)
 	}
 	writer.Flush()
 }

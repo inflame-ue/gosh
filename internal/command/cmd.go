@@ -114,8 +114,28 @@ func ExecuteCommands(cmds []*Command) error {
 
 func (c *Command) Execute() error {
 	cmd := exec.Command(c.Name, c.Args...)
+
+	if c.Redirect != nil {
+		file, err := prepareFile(c.Redirect)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+
+		if c.Redirect.State == OutputToFile || c.Redirect.State == AppendToFile {
+			cmd.Stdin = os.Stdin
+			cmd.Stdout = file
+			cmd.Stderr = os.Stderr
+		} else {
+			cmd.Stdin = file
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+		}
+	}
+
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+
 	return cmd.Run()
 }

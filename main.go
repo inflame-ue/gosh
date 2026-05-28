@@ -15,14 +15,6 @@ import (
 func repl() {
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
-		sigc := make(chan os.Signal, 1)
-		signal.Notify(sigc, syscall.SIGINT, syscall.SIGTERM)
-		go func() {
-			<-sigc
-			fmt.Println("\ninterrupt received...exiting...")
-			os.Exit(1)
-		}()
-
 		fmt.Print("gosh> ")
 		scanner.Scan()
 
@@ -63,8 +55,16 @@ func repl() {
 			continue
 		}
 	}
+
 }
 
 func main() {
+	sigc := make(chan os.Signal, 1)
+	signal.Notify(sigc, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		<-sigc
+		fmt.Println("\ninterrupt received...exiting...")
+		os.Exit(1)
+	}()
 	repl()
 }

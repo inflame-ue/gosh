@@ -32,6 +32,7 @@ func ExecuteCommands(cmds []*Command) error {
 	}
 	commands[len(commands) - 1].Stdout = os.Stdout
 
+	// TODO: ponder on whether there are any concurrency problems here?
 	for _, cmd := range commands {
 		err := cmd.Start()
 		if err != nil {

@@ -40,6 +40,10 @@ func repl() {
 			if err != nil {
 				fmt.Printf("err: %v\n", err)
 			}
+
+			// TODO: the builtins do not support pipes?
+			// i guess we skip to $PATH programs here anyway, so builtins are just for fancy demonstration purposes
+			// that i am capable of implementing a subset of shell commands (why?)
 			continue
 		}
 

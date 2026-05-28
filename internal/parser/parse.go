@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"errors"
 	"os"
 	"path"
 	"strings"
@@ -17,7 +16,7 @@ func parseFile(cmdString string, sep string) (string, error) {
 		return "", err
 	}
 
-	return path.Join(cwd, filename), nil
+	return path.Join(cwd, strings.TrimSpace(filename)), nil
 }
 
 func parseCommandRedirect(cmdString string) (*command.CommandRedirect, error) {
@@ -29,7 +28,7 @@ func parseCommandRedirect(cmdString string) (*command.CommandRedirect, error) {
 		}
 		redirect = command.CommandRedirect{
 			State: command.AppendToFile,
-			File: filepath,
+			File:  filepath,
 		}
 	} else if strings.Contains(cmdString, ">") {
 		filepath, err := parseFile(cmdString, ">")
@@ -38,7 +37,7 @@ func parseCommandRedirect(cmdString string) (*command.CommandRedirect, error) {
 		}
 		redirect = command.CommandRedirect{
 			State: command.OutputToFile,
-			File: filepath,
+			File:  filepath,
 		}
 	} else if strings.Contains(cmdString, "<") {
 		filepath, err := parseFile(cmdString, "<")
@@ -47,25 +46,28 @@ func parseCommandRedirect(cmdString string) (*command.CommandRedirect, error) {
 		}
 		redirect = command.CommandRedirect{
 			State: command.InputFromFile,
-			File: filepath,
+			File:  filepath,
 		}
 	} else {
-		return nil, errors.New("err: no valid redirect characters recognized")
+		return nil, nil
 	}
 	return &redirect, nil
 }
 
 func ParseCommands(input string) ([]*command.Command, error) {
-	var commands []*command.Command 
-	
+	var commands []*command.Command
+
 	commandStrings := strings.SplitSeq(input, "|")
 	for commandString := range commandStrings {
 		redirect, err := parseCommandRedirect(commandString)
 		if err != nil {
 			return nil, err
 		}
-		
-		commandParts := strings.Fields(strings.Split(commandString, string(redirect.State))[0])
+
+		if redirect != nil {
+			commandString = strings.Split(commandString, string(redirect.State))[0]
+		}
+		commandParts := strings.Fields(commandString)
 		commandName, commandArgs := commandParts[0], commandParts[1:]
 
 		if redirect == nil {
@@ -74,6 +76,6 @@ func ParseCommands(input string) ([]*command.Command, error) {
 			commands = append(commands, command.NewCommandWithRedirect(commandName, commandArgs, redirect))
 		}
 	}
-	
+
 	return commands, nil
 }

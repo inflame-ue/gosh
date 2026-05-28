@@ -22,6 +22,7 @@ func repl() {
 		for scanner.Scan() {
 			input <- scanner.Text()
 		}
+		input <- "\x04" // sentinal value to denote Ctrl-D signal
 	}()
 
 	for {
@@ -31,6 +32,15 @@ func repl() {
 			fmt.Println()
 			continue
 		case line := <-input:
+			if line == "\x04" {
+				fmt.Print("\nexiting...goodbye...")
+				os.Exit(0)
+			}
+
+			if line == "" {
+				continue
+			}
+			
 			commands, err := parser.ParseCommands(line)
 			if err != nil {
 				fmt.Printf("err: %v\n", err)
